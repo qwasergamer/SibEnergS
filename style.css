@@ -1,0 +1,971 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono:wght@300;400;500&display=swap');
+
+/* ===== СБРОС И БАЗОВЫЕ СТИЛИ ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Segoe UI', 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #1A8BBF 0%, #25C6F7 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ===== ЭНЕРГЕТИЧЕСКАЯ ЦВЕТОВАЯ ПАЛИТРА ===== */
+:root {
+    /* Основные энергетические цвета */
+    --energy-dark: #1A8BBF;        /* Темнее голубой - стабильность */
+    --energy-blue: #25C6F7;        /* Голубой энергии */
+    --energy-steel: #2c3e50;       /* Стальной серый */
+    --energy-yellow: #FFD700;      /* Жёлтый энергии */
+    --energy-orange: #FF8C00;      /* Оранжевый акцент */
+    --energy-green: #00A651;       /* Зелёный устойчивости */
+    --energy-light: #ecf0f1;       /* Светлый фон */
+    --energy-white: #ffffff;
+    
+    /* Градиенты */
+    --gradient-energy: linear-gradient(135deg, var(--energy-dark), var(--energy-blue));
+    --gradient-steel: linear-gradient(135deg, var(--energy-steel), #34495e);
+    --gradient-yellow: linear-gradient(135deg, var(--energy-yellow), #FFA500);
+}
+
+/* ===== ЧЕРДАК (ВЕРХНИЙ БАР) ===== */
+.top-bar {
+    background: var(--gradient-steel);
+    color: var(--energy-white);
+    padding: 8px 0;
+    font-size: 0.9rem;
+    border-bottom: 2px solid var(--energy-yellow);
+}
+
+.top-bar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.top-contacts {
+    display: flex;
+    gap: 30px;
+}
+
+.top-contact-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.top-contact-item i {
+    color: var(--energy-yellow);
+}
+
+.top-cta {
+    background: var(--energy-orange);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: 1px solid var(--energy-orange);
+}
+
+.top-cta:hover {
+    background: transparent;
+    border-color: var(--energy-white);
+}
+
+/* ===== ШАПКА ===== */
+.main-header {
+    background: var(--gradient-energy);
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    text-decoration: none;
+}
+
+.logo-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    object-fit: cover; /* Для JPG изображения */
+    box-shadow: 
+        0 0 0 1px rgba(255,255,255,0.3), /* Мягкая белая граница */
+        0 4px 8px rgba(0,0,0,0.2), /* Внешняя тень */
+        inset 0 0 10px rgba(255,255,255,0.2); /* Внутреннее размытие для мягких краёв */
+}
+
+.logo-text h1 {
+    color: var(--energy-white);
+    font-size: 1.8rem;
+    margin-bottom: 5px;
+    font-family: 'Rubik Mono', monospace; /* Изменён шрифт на Rubik Mono */
+}
+
+.logo-text .tagline {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+}
+
+/* ===== НАВИГАЦИЯ ===== */
+.main-nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2px; /* Уменьшено с 5px для компактности */
+}
+
+.main-nav a {
+    color: var(--energy-white);
+    text-decoration: none;
+    padding: 12px 12px; /* Уменьшено с 20px для меньшей ширины */
+    border-radius: 6px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 2px solid transparent;
+    white-space: nowrap; /* Предотвращает перенос для компактности */
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+    background: rgba(255,255,255,0.1);
+    border-color: var(--energy-yellow);
+    color: var(--energy-yellow);
+}
+
+.mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+/* ===== ГЛАВНАЯ СЕКЦИЯ СО СЛАЙДЕРОМ ===== */
+.hero {
+    position: relative;
+    height: 100vh;
+    overflow: hidden;
+    border-bottom: 5px solid var(--energy-yellow);
+}
+
+.slider-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.slide.active {
+    opacity: 1;
+}
+
+.slide-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.slide-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    z-index: 2;
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+.slide-content h1 {
+    font-size: 3.5rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    font-weight: 300;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    line-height: 1.6;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 30px;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.btn-primary {
+    background: var(--gradient-yellow);
+    color: var(--energy-dark);
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.btn-secondary {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+}
+
+.btn-secondary:hover {
+    background: white;
+    color: var(--energy-dark);
+}
+
+.slider-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.slider-arrow:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.prev {
+    left: 20px;
+}
+
+.next {
+    right: 20px;
+}
+
+.slider-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 3;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: var(--energy-yellow);
+    transform: scale(1.2);
+}
+
+/* ===== СЕКЦИИ ===== */
+.page-header {
+    background: var(--gradient-energy);
+    color: white;
+    padding: 80px 0 40px;
+    text-align: center;
+}
+
+.page-header h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.breadcrumb {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.8);
+}
+
+.breadcrumb a {
+    color: var(--energy-yellow);
+    text-decoration: none;
+}
+
+.content-section {
+    padding: 60px 0;
+    background: var(--energy-light);
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    color: var(--energy-dark);
+    margin-bottom: 20px;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.2rem;
+    color: var(--energy-steel);
+    max-width: 600px;
+    margin: 0 auto 50px;
+}
+
+/* ===== КАРТОЧКИ ===== */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.feature-card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--gradient-energy);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+    color: white;
+}
+
+.feature-card h3 {
+    color: var(--energy-dark);
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+/* ===== СТАТИСТИКА ===== */
+.stats-section {
+    background: var(--gradient-steel);
+    color: white;
+    padding: 60px 0;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    text-align: center;
+}
+
+.stat-item {
+    opacity: 0;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--energy-yellow);
+    display: block;
+    margin-bottom: 10px;
+}
+
+/* ===== КЛИЕНТЫ ===== */
+.clients-section {
+    padding: 60px 0;
+    background: white;
+}
+
+.clients-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 30px;
+    text-align: center;
+}
+
+.client-logo {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: all 0.3s ease;
+}
+
+.client-logo:hover {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* ===== ФОРМА ===== */
+.contact-section {
+    background: var(--gradient-energy);
+    color: white;
+    padding: 80px 0;
+}
+
+.form-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--energy-yellow);
+    box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+textarea.form-control {
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* ===== ПОДВАЛ ===== */
+.main-footer {
+    background: var(--gradient-steel);
+    color: var(--energy-white);
+    padding: 60px 0 20px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.footer-col h3 {
+    color: var(--energy-yellow);
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.footer-col h3::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 50px;
+    height: 2px;
+    background: var(--energy-yellow);
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 10px;
+}
+
+.footer-links a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-links a:hover {
+    color: var(--energy-yellow);
+    padding-left: 5px;
+}
+
+.footer-contact {
+    list-style: none;
+}
+
+.footer-contact li {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.footer-contact i {
+    color: var(--energy-yellow);
+    width: 20px;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.6);
+    font-size: 0.9rem;
+}
+
+/* ===== МОДАЛЬНОЕ ОКНО ===== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 1001;
+    align-items: center;
+    justify-content: center;
+}
+.close-modal {
+    display: none !important; /* Полностью скрываем на всех страницах, или только на geography: .geography .close-modal { display: none; } */
+}
+.modal-content {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+}
+
+.close-modal {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--energy-steel);
+}
+
+/* ===== НОВЫЕ СТИЛИ ДЛЯ О КОМПАНИИ ===== */
+/* Timeline */
+.timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--energy-blue);
+    transform: translateX(-50%);
+}
+
+.timeline-item {
+    position: relative;
+    margin: 40px 0;
+    width: 45%;
+}
+
+.timeline-item:nth-child(odd) {
+    left: 5%;
+}
+
+.timeline-item:nth-child(even) {
+    left: 50%;
+}
+
+.timeline-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.timeline-content::before {
+    content: '';
+    position: absolute;
+    top: 20px;
+    width: 16px;
+    height: 16px;
+    background: var(--energy-yellow);
+    border-radius: 50%;
+    left: -40px;
+}
+
+.timeline-item:nth-child(even) .timeline-content::before {
+    left: auto;
+    right: -40px;
+}
+
+/* Руководство */
+.leadership-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin: 40px 0;
+}
+
+.leadership-card {
+    text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.leadership-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: var(--gradient-energy);
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+}
+
+/* Подразделения */
+.divisions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin: 40px 0;
+}
+
+.division-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.division-icon {
+    font-size: 3rem;
+    color: var(--energy-blue);
+    margin-bottom: 15px;
+}
+
+/* Карта */
+.map-section {
+    padding: 60px 0;
+    background: var(--energy-light);
+    text-align: center;
+}
+
+.map-placeholder {
+    width: 100%;
+    height: 400px;
+    background: var(--gradient-steel);
+    border-radius: 10px;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+/* ===== АДАПТИВНОСТЬ ===== */
+@media (max-width: 992px) {
+    .hero h1 {
+        font-size: 2.8rem;
+    }
+    
+    .main-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--energy-dark);
+        padding: 20px;
+    }
+    
+    .main-nav.active {
+        display: block;
+    }
+    
+    .main-nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .mobile-menu-btn {
+        display: block;
+    }
+
+    .slider-arrow {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+
+    .prev {
+        left: 10px;
+    }
+
+    .next {
+        right: 10px;
+    }
+
+    .timeline::before {
+        left: 20px;
+    }
+
+    .timeline-item {
+        width: 100%;
+        left: 0 !important;
+    }
+
+    .timeline-item .timeline-content::before {
+        left: 20px !important;
+        right: auto !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero {
+        height: 80vh;
+    }
+
+    .hero h1 {
+        font-size: 2.2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .top-bar .container {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .top-contacts {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .slider-dots {
+        bottom: 10px;
+    }
+
+    .dot {
+        width: 10px;
+        height: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .feature-card {
+        padding: 20px;
+    }
+
+    .slider-arrow {
+        display: none; /* Скрываем стрелки на очень маленьких экранах */
+    }
+}
+/* ===== ИНТЕРАКТИВНАЯ КАРТА (для geography.html) ===== */
+.map-svg {
+    width: 100%;
+    height: 80vh; /* Responsive height вместо 1000px, чтобы не перекрывать текст */
+    min-height: 600px; /* Минимальная высота для мобильных */
+    max-height: 100vh; /* Не выходит за viewport */
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    max-width: 1200px;
+    display: block;
+    margin: 20px auto -100px; /* Центрируем, но сдвигаем левее на 100px (подкорректируйте -100px) */
+    position: relative; /* Чтобы z-index работал */
+    z-index: 1; /* Низкий z-index, чтобы не перекрывать текст */
+}
+
+.map-svg:hover {
+    transform: scale(1.02);
+}
+
+.region-default {
+    fill: var(--energy-blue);
+    stroke: var(--energy-yellow);
+    stroke-width: 1;
+    transition: all 0.3s ease;
+}
+
+.region-highlighted {
+    fill: var(--energy-blue);
+    stroke: var(--energy-yellow);
+    stroke-width: 2;
+    opacity: 0.8;
+}
+
+.region-highlighted:hover,
+.region-highlighted-hover {
+    fill: var(--energy-yellow);
+    stroke: var(--energy-dark);
+    stroke-width: 2;
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+#tooltip {
+    position: fixed; /* Изменено с absolute на fixed для стабильности */
+    background: var(--energy-steel);
+    color: white;
+    padding: 15px; /* Больше padding для читаемости */
+    border-radius: 8px;
+    font-size: 1rem;
+    pointer-events: none;
+    display: none;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+    z-index: 1001; /* Высокий z-index поверх карты */
+    min-width: 200px;
+    max-width: 300px;
+    white-space: normal; /* Для многострочного текста */
+}
+/* Маленькая статичная карта (для about-company.html) */
+.static-map-svg {
+    width: 100%;
+    height: 300px;
+    cursor: default;
+}
+
+.static-region {
+    fill: var(--energy-blue);
+    stroke: var(--energy-yellow);
+    stroke-width: 1;
+    opacity: 0.7;
+}
+.unconnected-region {
+    fill: #808080; /* Серый фон */
+    stroke: var(--energy-blue); /* Голубая окантовка */
+    stroke-width: 2;
+    transition: all 0.3s ease;
+    opacity: 0.8;
+}
+
+.unconnected-region:hover {
+    fill: #696969; /* Тёмно-серый на hover */
+    stroke: var(--energy-dark); /* Тёмно-голубая окантовка на hover */
+    opacity: 1;
+    transform: scale(1.05); /* Лёгкий зум для интерактивности */
+}
