@@ -133,7 +133,7 @@ function loadRegionsFromJson() {
         });
 }
 
-// Функция кликов по регионам (обновлённая для 27+ path — замени в script.js)
+// Функция кликов по регионам (обновлённая для фикса hover: меньший scale, анти-заморозка — замени в script.js)
 function attachRegionClicks() {
     console.log('DEBUG: attachRegionClicks стартовала. Ищем в 27+ path...');
     
@@ -158,6 +158,9 @@ function attachRegionClicks() {
             console.warn(`DEBUG: Пропуск интерактивного path ${index}: нет data-region! (class: ${region.className.baseVal})`);
             return;
         }
+        
+        // Флаг для hover (чтобы избежать race-condition при быстром движении мыши)
+        let isHovered = false;
         
         // Cursor и transition для всех интерактивных
         region.style.cursor = 'pointer';
@@ -192,8 +195,9 @@ function attachRegionClicks() {
             }
         });
         
-        // HOVER: Независимый для ВСЕХ интерактивных (не только кликнутого)
+        // HOVER ENTER: Независимый для ВСЕХ интерактивных, меньший scale
         region.addEventListener('mouseenter', (e) => {
+            isHovered = true;
             console.log('DEBUG: Hover enter на:', regionName);
             if (regionData[regionName]) {
                 const tooltip = document.getElementById('tooltip');
@@ -207,22 +211,34 @@ function attachRegionClicks() {
                     tooltip.style.left = (e.pageX + 10) + 'px';
                     tooltip.style.top = (e.pageY - 10) + 'px';
                 }
-                // Эффект: scale + fill для ВСЕХ (независимо от highlighted)
-                region.style.transform = 'scale(1.05)';
+                // Меньший эффект: scale 1.02 (лёгкий подъём, не дёргает)
+                region.style.transform = 'scale(1.02)';
                 region.style.fill = '#b2dfdb';  // Светло-зелёный hover (не влияет на highlighted жёлтый)
             }
         });
         
+        // HOVER LEAVE: Force-сброс стилей + флаг для анти-заморозки
         region.addEventListener('mouseleave', (e) => {
+            isHovered = false;
             console.log('DEBUG: Hover leave с:', regionName);
             const tooltip = document.getElementById('tooltip');
             if (tooltip) tooltip.style.display = 'none';
             
-            // Сброс стилей: только если НЕ highlighted (чтобы кликнутый остался жёлтым)
+            // Сброс стилей: force removeProperty, если НЕ highlighted (чтобы избежать заморозки)
             if (!region.classList.contains('region-highlighted')) {
-                region.style.transform = 'scale(1)';
-                region.style.fill = '';  // Вернуть CSS default
+                region.style.removeProperty('transform');  // Полностью убрать inline scale
+                region.style.removeProperty('fill');  // Вернуть к CSS default
+                console.log('DEBUG: Стили сброшены для:', regionName);
             }
+            
+            // Дополнительная проверка: через 100ms force-сброс, если флаг false (анти-заморозка)
+            setTimeout(() => {
+                if (!isHovered && !region.classList.contains('region-highlighted')) {
+                    region.style.removeProperty('transform');
+                    region.style.removeProperty('fill');
+                    console.log('DEBUG: Force-сброс стилей для:', regionName);
+                }
+            }, 100);
         });
     });
     
@@ -265,4 +281,5 @@ window.onclick = function(event) {
     const modal = document.getElementById('regionModal');
     if (event.target === modal) closeRegionModal();
 };
+
 
