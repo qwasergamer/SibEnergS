@@ -133,60 +133,104 @@ function loadRegionsFromJson() {
         });
 }
 
-// Функция кликов по регионам
+// Функция кликов по регионам (обновлённая для 27+ path — замени в script.js)
 function attachRegionClicks() {
-    console.log('DEBUG: attachRegionClicks стартовала');
-    const regions = document.querySelectorAll('.region-default, .region-highlighted, .unconnected-region');
-    console.log('DEBUG: Найдено регионов:', regions.length);
+    console.log('DEBUG: attachRegionClicks стартовала. Ищем в 27+ path...');
+    
+    // Лог ВСЕХ path (для debug: класс + data-region)
+    const allPaths = document.querySelectorAll('path');
+    console.log(`DEBUG: Всего path в SVG: ${allPaths.length} (ожидаемо 27+)`);
+    allPaths.forEach((path, idx) => {
+        console.log(`DEBUG: Path ${idx}: class="${path.className.baseVal}", data-region="${path.dataset.region || 'ОТСУТСТВУЕТ'}"`);
+    });
+    
+    // Селектор только для интерактивных (class с "region-", ~6+)
+    const regions = document.querySelectorAll('path[class*="region-"]');
+    console.log('DEBUG: Интерактивных регионов (с class region-*):', regions.length);
     
     let clickedRegionName = null;
     
     regions.forEach((region, index) => {
         const regionName = region.dataset.region;
-        console.log(`DEBUG: Регион ${index}: ${regionName}`);
+        console.log(`DEBUG: Обрабатываем интерактивный ${index}: "${regionName}" (class: ${region.className.baseVal})`);
         
         if (!regionName) {
-            console.warn(`DEBUG: Нет data-region у региона ${index}! Добавь в SVG.`);
+            console.warn(`DEBUG: Пропуск интерактивного path ${index}: нет data-region! (class: ${region.className.baseVal})`);
             return;
         }
         
+        // Cursor и transition для всех интерактивных
         region.style.cursor = 'pointer';
+        region.style.transition = 'fill 0.2s ease, transform 0.2s ease';  // Плавно для hover/клик
+        
+        // КЛИК: Только на интерактивных, независимо от hover
         region.addEventListener('click', (e) => {
             e.preventDefault();
+            e.stopPropagation();  // Блокируем bubble на родителях (для деталей)
             console.log('DEBUG: Клик на:', regionName);
+            
             if (clickedRegionName === regionName) {
                 closeRegionModal();
                 clickedRegionName = null;
                 region.classList.remove('region-highlighted');
+                console.log('DEBUG: Закрытие модала, highlighted снят');
             } else {
+                // Сброс предыдущего
+                if (clickedRegionName) {
+                    const prev = Array.from(regions).find(r => r.dataset.region === clickedRegionName);
+                    if (prev) prev.classList.remove('region-highlighted');
+                }
+                // Новый модал
                 if (regionData[regionName]) {
                     showRegionModal(regionData[regionName], regionName);
                     clickedRegionName = regionName;
-                    region.classList.add('region-highlighted');
-                    regions.forEach(r => {
-                        if (r.dataset.region !== regionName) r.classList.remove('region-highlighted');
-                    });
+                    region.classList.add('region-highlighted');  // Жёлтый из CSS
+                    console.log('DEBUG: Модал открыт, highlighted добавлен');
                 } else {
-                    console.warn('DEBUG: Нет данных для:', regionName);
+                    console.warn('DEBUG: Нет данных в JSON для:', regionName, '(добавь в regions.json)');
                 }
             }
         });
         
+        // HOVER: Независимый для ВСЕХ интерактивных (не только кликнутого)
         region.addEventListener('mouseenter', (e) => {
+            console.log('DEBUG: Hover enter на:', regionName);
             if (regionData[regionName]) {
                 const tooltip = document.getElementById('tooltip');
-                tooltip.innerHTML = `<strong>${regionName}</strong><br>Статус: ${regionData[regionName].status}`;
-                tooltip.style.display = 'block';
-                tooltip.style.left = e.pageX + 10 + 'px';
-                tooltip.style.top = e.pageY - 10 + 'px';
+                if (tooltip) {
+                    tooltip.innerHTML = `
+                        <strong>${regionName}</strong><br>
+                        Статус: ${regionData[regionName].status}<br>
+                        ГВт: ${regionData[regionName].potential_gw || 'N/A'}
+                    `;
+                    tooltip.style.display = 'block';
+                    tooltip.style.left = (e.pageX + 10) + 'px';
+                    tooltip.style.top = (e.pageY - 10) + 'px';
+                }
+                // Эффект: scale + fill для ВСЕХ (независимо от highlighted)
+                region.style.transform = 'scale(1.05)';
+                region.style.fill = '#b2dfdb';  // Светло-зелёный hover (не влияет на highlighted жёлтый)
             }
         });
         
-        region.addEventListener('mouseleave', () => {
-            document.getElementById('tooltip').style.display = 'none';
+        region.addEventListener('mouseleave', (e) => {
+            console.log('DEBUG: Hover leave с:', regionName);
+            const tooltip = document.getElementById('tooltip');
+            if (tooltip) tooltip.style.display = 'none';
+            
+            // Сброс стилей: только если НЕ highlighted (чтобы кликнутый остался жёлтым)
+            if (!region.classList.contains('region-highlighted')) {
+                region.style.transform = 'scale(1)';
+                region.style.fill = '';  // Вернуть CSS default
+            }
         });
     });
-    console.log('DEBUG: attachRegionClicks завершена');
+    
+    if (regions.length === 0) {
+        console.error('DEBUG: Нет интерактивных регионов! Добавь class="region-default" на path в SVG.');
+    } else {
+        console.log(`DEBUG: Готово! Обработано ${regions.length} интерактивных регионов из ${allPaths.length} path.`);
+    }
 }
 
 // Модалы регионов
@@ -221,3 +265,4 @@ window.onclick = function(event) {
     const modal = document.getElementById('regionModal');
     if (event.target === modal) closeRegionModal();
 };
+
