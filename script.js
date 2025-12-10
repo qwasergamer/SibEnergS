@@ -211,8 +211,8 @@ function attachRegionClicks() {
                     tooltip.style.left = (e.pageX + 10) + 'px';
                     tooltip.style.top = (e.pageY - 10) + 'px';
                 }
-                // Меньший эффект: scale 1.02 (лёгкий подъём, не дёргает)
-                region.style.transform = 'scale(1.02)';
+                // Меньший эффект: scale 1.015 (лёгкий подъём, не дёргает)
+                region.style.transform = 'scale(1.015)';
                 region.style.fill = '#b2dfdb';  // Светло-зелёный hover (не влияет на highlighted жёлтый)
             }
         });
@@ -281,5 +281,6 @@ window.onclick = function(event) {
     const modal = document.getElementById('regionModal');
     if (event.target === modal) closeRegionModal();
 };
+
 
 
