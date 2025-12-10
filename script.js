@@ -423,4 +423,205 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModals = document.querySelectorAll('.close-modal');
     closeModals.forEach(modal => modal.style.display = 'none');
 });
+let regionData = {};  // Глобальный объект для данных
+
+async function loadRegionsFromJson() {
+    try {
+        // Основной fetch с путём к подпапке data
+        const response = await fetch('data/regions.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);  // Ловит 404 и т.д.
+        }
+        const data = await response.json();
+        
+        // Преобразуем в объект для быстрого доступа по имени
+        regionData = {};
+        data.regions.forEach(region => {
+            regionData[region.name] = region;  // Полный объект с id, status и т.д.
+        });
+        
+        console.log('Данные из JSON загружены:', regionData);
+        
+        // Привязываем клики к регионам (после загрузки)
+        attachRegionClicks();
+        
+    } catch (error) {
+        console.error('Ошибка загрузки JSON:', error);
+        // Fallback: встроенные данные (как раньше, для теста)
+        const fallbackData = {
+            "regions": [
+                {
+                    "id": 1,
+                    "name": "Алтайский край",
+                    "connected_year": 2024,
+                    "potential_gw": 12.00,
+                    "substations": 5000,
+                    "lines_km": 15000,
+                    "status": "connected",
+                    "description": "Полностью подключён к сети. Основные объекты: промышленные зоны Барнаула."
+                },
+                {
+                    "id": 2,
+                    "name": "Красноярский край",
+                    "connected_year": 2023,
+                    "potential_gw": 45.00,
+                    "substations": 12000,
+                    "lines_km": 80000,
+                    "status": "connected",
+                    "description": "Крупнейший регион по мощности. Фокус на гидроэнергетике и ЛЭП в тайге."
+                },
+                {
+                    "id": 3,
+                    "name": "Иркутская область",
+                    "connected_year": 2022,
+                    "potential_gw": 35.00,
+                    "substations": 8000,
+                    "lines_km": 60000,
+                    "status": "connected",
+                    "description": "Энергия от Байкала. 200 тыс. подстанций в эксплуатации."
+                },
+                {
+                    "id": 4,
+                    "name": "Новосибирская область",
+                    "connected_year": 2024,
+                    "potential_gw": 18.00,
+                    "substations": 6000,
+                    "lines_km": 25000,
+                    "status": "connected",
+                    "description": "Транспортный хаб Сибири с фокусом на городские сети."
+                },
+                {
+                    "id": 5,
+                    "name": "Не подключённая зона 1 (Тыва)",
+                    "connected_year": null,
+                    "potential_gw": 5.00,
+                    "substations": null,
+                    "lines_km": null,
+                    "status": "planned",
+                    "description": "Планируется в 2026. Потенциал для возобновляемых источников."
+                },
+                {
+                    "id": 6,
+                    "name": "Не подключённая зона 2 (Хакасия)",
+                    "connected_year": null,
+                    "potential_gw": 3.00,
+                    "substations": null,
+                    "lines_km": null,
+                    "status": "in_development",
+                    "description": "В разработке. Ожидается запуск в 2025."
+                }
+            ]
+        };
+        
+        // Преобразуем fallback в объект
+        regionData = {};
+        fallbackData.regions.forEach(region => {
+            regionData[region.name] = region;
+        });
+        
+        console.log('Fallback данные загружены (JSON не найден):', regionData);
+        attachRegionClicks();
+    }
+}
+
+// Функция для привязки кликов к регионам (с логами)
+function attachRegionClicks() {
+    const regions = document.querySelectorAll('.region-default, .region-highlighted, .unconnected-region');  // Добавил unconnected
+    console.log('Найдено регионов для клика:', regions.length);  // Лог: сколько path
+    
+    let clickedRegionName = null;
+    
+    regions.forEach((region, index) => {
+        const regionName = region.dataset.region;  // Из data-region
+        console.log(`Регион ${index}:`, regionName, ' (data-region OK?)');  // Лог: для каждого
+        
+        if (!regionName) {
+            console.warn(`У региона ${index} нет data-region! Добавь в SVG.`);  // Предупреждение
+            return;
+        }
+        
+        region.style.cursor = 'pointer';  // Визуал: рука на hover
+        region.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('Клик на:', regionName);  // Лог клика
+            if (clickedRegionName === regionName) {
+                closeRegionModal();
+                clickedRegionName = null;
+                region.classList.remove('region-highlighted');
+            } else {
+                if (regionData[regionName]) {
+                    showRegionModal(regionData[regionName], regionName);
+                    clickedRegionName = regionName;
+                    region.classList.add('region-highlighted');
+                    regions.forEach(r => {
+                        if (r.dataset.region !== regionName) r.classList.remove('region-highlighted');
+                    });
+                } else {
+                    console.warn('Нет данных для:', regionName);
+                }
+            }
+        });
+        
+        // Hover для tooltip
+        region.addEventListener('mouseenter', (e) => {
+            if (regionData[regionName]) {
+                const tooltip = document.getElementById('tooltip');
+                tooltip.innerHTML = `<strong>${regionName}</strong><br>Статус: ${regionData[regionName].status}`;
+                tooltip.style.display = 'block';
+                tooltip.style.left = e.pageX + 10 + 'px';
+                tooltip.style.top = e.pageY - 10 + 'px';
+            }
+        });
+        
+        region.addEventListener('mouseleave', () => {
+            document.getElementById('tooltip').style.display = 'none';
+        });
+    });
+}
+
+// Показать модал с данными региона
+function showRegionModal(region, name) {
+    const modal = document.getElementById('regionModal');
+    const modalContent = document.getElementById('modalContent');
+    
+    if (modal && modalContent) {
+        modalContent.innerHTML = `
+            <h2>${name}</h2>
+            <p><strong>Год подключения:</strong> ${region.connected_year || 'N/A'}</p>
+            <p><strong>Потенциал (ГВт):</strong> ${region.potential_gw || 'N/A'}</p>
+            <p><strong>Подстанций:</strong> ${region.substations || 'N/A'}</p>
+            <p><strong>ЛЭП (км):</strong> ${region.lines_km || 'N/A'}</p>
+            <p><strong>Статус:</strong> ${region.status}</p>
+            <p><strong>Описание:</strong> ${region.description}</p>
+            <button onclick="closeRegionModal()" style="background: var(--energy-blue); color: white; padding: 10px; border: none; border-radius: 5px; cursor: pointer;">Закрыть</button>
+        `;
+        modal.style.display = 'block';
+        console.log('Модал показан для:', name);
+    } else {
+        console.error('Модал не найден! Проверь HTML.');
+    }
+}
+
+// Закрыть модал
+function closeRegionModal() {
+    const modal = document.getElementById('regionModal');
+    if (modal) {
+        modal.style.display = 'none';
+        console.log('Модал закрыт');
+    }
+}
+
+// Закрытие модала по клику вне
+window.onclick = function(event) {
+    const modal = document.getElementById('regionModal');
+    if (event.target === modal) {
+        closeRegionModal();
+    }
+}
+
+// Запуск при загрузке (добавь/замени в DOMContentLoaded — убедись, что это в конце файла)
+document.addEventListener('DOMContentLoaded', function() {
+    // ... твой существующий код (слайдер, меню и т.д.) ...
+    loadRegionsFromJson();  // Запуск "запроса к БД"
+});
 });
