@@ -1,0 +1,64 @@
+{
+  "regions": [
+    {
+      "id": 1,
+      "name": "Алтайский край",
+      "connected_year": 2024,
+      "potential_gw": 12.00,
+      "substations": 5000,
+      "lines_km": 15000,
+      "status": "connected",
+      "description": "Полностью подключён к сети. Основные объекты: промышленные зоны Барнаула."
+    },
+    {
+      "id": 2,
+      "name": "Красноярский край",
+      "connected_year": 2023,
+      "potential_gw": 45.00,
+      "substations": 12000,
+      "lines_km": 80000,
+      "status": "connected",
+      "description": "Крупнейший регион по мощности. Фокус на гидроэнергетике и ЛЭП в тайге."
+    },
+    {
+      "id": 3,
+      "name": "Иркутская область",
+      "connected_year": 2022,
+      "potential_gw": 35.00,
+      "substations": 8000,
+      "lines_km": 60000,
+      "status": "connected",
+      "description": "Энергия от Байкала. 200 тыс. подстанций в эксплуатации."
+    },
+    {
+      "id": 4,
+      "name": "Новосибирская область",
+      "connected_year": 2024,
+      "potential_gw": 18.00,
+      "substations": 6000,
+      "lines_km": 25000,
+      "status": "connected",
+      "description": "Транспортный хаб Сибири с фокусом на городские сети."
+    },
+    {
+      "id": 5,
+      "name": "Не подключённая зона 1 (Тыва)",
+      "connected_year": null,
+      "potential_gw": 5.00,
+      "substations": null,
+      "lines_km": null,
+      "status": "planned",
+      "description": "Планируется в 2026. Потенциал для возобновляемых источников."
+    },
+    {
+      "id": 6,
+      "name": "Не подключённая зона 2 (Хакасия)",
+      "connected_year": null,
+      "potential_gw": 3.00,
+      "substations": null,
+      "lines_km": null,
+      "status": "in_development",
+      "description": "В разработке. Ожидается запуск в 2025."
+    }
+  ]
+}
