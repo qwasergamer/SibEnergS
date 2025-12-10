@@ -23,6 +23,7 @@ body {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 20px;
+    width: auto;
 }
 
 /* ===== ЭНЕРГЕТИЧЕСКАЯ ЦВЕТОВАЯ ПАЛИТРА ===== */
@@ -887,7 +888,7 @@ textarea.form-control {
 }
 /* ===== ИНТЕРАКТИВНАЯ КАРТА (для geography.html) ===== */
 .map-svg {
-    width: 100%;
+    width: 150%;
     height: 80vh; /* Responsive height вместо 1000px, чтобы не перекрывать текст */
     min-height: 600px; /* Минимальная высота для мобильных */
     max-height: 100vh; /* Не выходит за viewport */
@@ -895,7 +896,8 @@ textarea.form-control {
     transition: transform 0.3s ease;
     max-width: 1200px;
     display: block;
-    margin: 20px auto -100px; /* Центрируем, но сдвигаем левее на 100px (подкорректируйте -100px) */
+    margin: 20px auto -50px; /* Вертикальный сдвиг остаётся, но горизонтальный меняем */
+    margin-left: -60px; /* Новый сдвиг левее: -80px (увеличьте до -120px если нужно больше) */
     position: relative; /* Чтобы z-index работал */
     z-index: 1; /* Низкий z-index, чтобы не перекрывать текст */
 }
@@ -968,4 +970,119 @@ textarea.form-control {
     stroke: var(--energy-dark); /* Тёмно-голубая окантовка на hover */
     opacity: 1;
     transform: scale(1.05); /* Лёгкий зум для интерактивности */
+}
+/* ===== СПЕЦИАЛЬНЫЕ СТИЛИ ДЛЯ СТРАНИЦЫ ГЕОГРАФИИ (добавить в конец style.css) ===== */
+
+/* Фон страницы шире: серый для "рамки" вокруг карты, чтобы она помещалась */
+body.geography-page {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%); /* Серый градиент для "рамки" */
+    overflow-x: hidden; /* Убираем горизонтальный скролл — ничего не вылезает за края */
+    min-width: auto; /* Убрали 1400px — теперь стандартная ширина */
+}
+
+/* Контейнер шире для geography: убираем ограничение, чтобы фон и карта растягивались */
+body.geography-page .container {
+    max-width: 1200px; /* Стандартная ширина — не съезжает к краям */
+    width: auto; /* Авто вместо 100vw */
+    padding: 0 20px; /* Отступы по краям для "воздуха" */
+    margin: 0 auto; /* Центрируем контейнер */
+}
+
+/* Сдвиг карты левее + шире для полного отображения */
+body.geography-page .map-svg {
+    width: 100%; /* Стандартная ширина внутри контейнера — не 100vw */
+    height: 80vh; /* Вернули 80vh — зона не перерастягивается */
+    min-height: 600px;
+    max-height: 100vh;
+    margin: 20px auto -100px; /* Центрируем горизонтально (auto), вертикальный сдвиг сохранён */
+    padding-left: 80px; /* Мягкий сдвиг левее через padding (вместо negative margin) — карта "сдвигается" внутри без скролла */
+    box-sizing: border-box; /* Padding не увеличивает ширину */
+    position: relative;
+    z-index: 1;
+}
+/* Tooltip на geography: адаптируем под шире фон */
+body.geography-page #tooltip {
+    background: #2c3e50;
+    z-index: 1002;
+}
+
+/* Медиа-запрос: на мобильных/таблетах не переусердствуем с шириной */
+@media (max-width: 1200px) {
+    body.geography-page {
+        background: linear-gradient(135deg, #1A8BBF 0%, #25C6F7 100%); /* Голубой на планшетах */
+    }
+    
+    body.geography-page .container {
+        max-width: 100%;
+        padding: 0 10px; /* Меньше отступов на узких */
+    }
+    
+    body.geography-page .map-svg {
+        height: 70vh;
+        padding-left: 0; /* Без сдвига на планшетах */
+        margin: 20px auto -80px;
+    }
+}
+
+@media (max-width: 768px) {
+    body.geography-page .map-svg {
+        height: 60vh;
+        padding-left: 0;
+        margin: 10px auto -50px;
+    }
+}/* ===== РАСШИРЕНИЕ ЗОНЫ ОТОБРАЖЕНИЯ КАРТЫ (добавить в конец style.css) ===== */
+
+/* Увеличение размера карты для geography */
+body.geography-page .map-svg {
+    width: 100vw; /* Полная ширина экрана для расширения зоны */
+    height: 100vh; /* Увеличено с 80vh до 100vh — карта на весь экран */
+    min-height: 700px; /* Минимальная высота выросла для десктопа */
+    max-height: none; /* Убрано ограничение — теперь растягивается */
+    margin: 20px 0 -50px -100px; /* Вертикальный сдвиг уменьшен (-50px вместо -100px), левый — сохранён */
+    transform: translateX(-5%) scale(1.1); /* Масштаб +10% для большего охвата, сдвиг левее */
+}
+
+/* Адаптация для текста под картой (чтобы не перекрывалось) */
+body.geography-page .map-section {
+    margin-top: -10px; /* Меньше сдвиг, чтобы текст не "прыгал" */
+}
+
+/* Медиа-запрос: на узких экранах не переусердствуем */
+@media (max-width: 1200px) {
+    body.geography-page .map-svg {
+        height: 85vh; /* Зона чуть меньше на планшетах */
+        transform: none; /* Нет масштаба */
+    }
+}
+@media (max-width: 768px) {
+    body.geography-page .map-svg {
+        height: 70vh;
+        width: 100%;
+        margin-left: 0;
+        transform: none;
+    }
+    /* Стили для модала и регионов (добавь в конец style.css) */
+.region-highlighted {
+    fill: var(--energy-yellow) !important;  /* Жёлтый при клике */
+    stroke: var(--energy-orange) !important;
+    stroke-width: 2;
+}
+
+.unconnected-region {
+    fill: #ffebee;  /* Красный для не подключённых */
+    stroke: #d32f2f;
+}
+
+.unconnected-region:hover {
+    fill: #ffcdd2;
+}
+
+.modal {
+    animation: fadeIn 0.3s ease;  /* Плавное появление */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
 }
