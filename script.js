@@ -133,7 +133,7 @@ function loadRegionsFromJson() {
         });
 }
 
-// Функция кликов по регионам (обновлённая для фикса hover: меньший scale, анти-заморозка — замени в script.js)
+// Функция кликов по регионам (обновлённая: translateY вместо scale для равномерного подъёма — замени в script.js)
 function attachRegionClicks() {
     console.log('DEBUG: attachRegionClicks стартовала. Ищем в 27+ path...');
     
@@ -165,6 +165,7 @@ function attachRegionClicks() {
         // Cursor и transition для всех интерактивных
         region.style.cursor = 'pointer';
         region.style.transition = 'fill 0.2s ease, transform 0.2s ease';  // Плавно для hover/клик
+        region.style.transformOrigin = 'center center';  // Центр для равномерности (если вернёшь scale)
         
         // КЛИК: Только на интерактивных, независимо от hover
         region.addEventListener('click', (e) => {
@@ -195,7 +196,7 @@ function attachRegionClicks() {
             }
         });
         
-        // HOVER ENTER: Независимый для ВСЕХ интерактивных, меньший scale
+        // HOVER ENTER: translateY(-1px) для равномерного подъёма (вместо scale)
         region.addEventListener('mouseenter', (e) => {
             isHovered = true;
             console.log('DEBUG: Hover enter на:', regionName);
@@ -211,13 +212,14 @@ function attachRegionClicks() {
                     tooltip.style.left = (e.pageX + 10) + 'px';
                     tooltip.style.top = (e.pageY - 10) + 'px';
                 }
-                // Меньший эффект: scale 1.015 (лёгкий подъём, не дёргает)
-                region.style.transform = 'scale(1.015)';
-                region.style.fill = '#b2dfdb';  // Светло-зелёный hover (не влияет на highlighted жёлтый)
+                // Равномерный эффект: подъём на 1px вверх (translateY), + лёгкий fill
+                region.style.transform = 'translateY(-1px)';
+                region.style.fill = '#b2dfdb';  // Светло-зелёный hover
+                console.log('DEBUG: Hover эффект: translateY(-1px) для равномерного подъёма');
             }
         });
         
-        // HOVER LEAVE: Force-сброс стилей + флаг для анти-заморозки
+        // HOVER LEAVE: Force-сброс стилей + флаг для анти-заморозки (timeout 50ms)
         region.addEventListener('mouseleave', (e) => {
             isHovered = false;
             console.log('DEBUG: Hover leave с:', regionName);
@@ -226,19 +228,19 @@ function attachRegionClicks() {
             
             // Сброс стилей: force removeProperty, если НЕ highlighted (чтобы избежать заморозки)
             if (!region.classList.contains('region-highlighted')) {
-                region.style.removeProperty('transform');  // Полностью убрать inline scale
+                region.style.removeProperty('transform');  // Полностью убрать inline translateY
                 region.style.removeProperty('fill');  // Вернуть к CSS default
                 console.log('DEBUG: Стили сброшены для:', regionName);
             }
             
-            // Дополнительная проверка: через 100ms force-сброс, если флаг false (анти-заморозка)
+            // Дополнительная проверка: через 50ms force-сброс, если флаг false (анти-заморозка)
             setTimeout(() => {
                 if (!isHovered && !region.classList.contains('region-highlighted')) {
                     region.style.removeProperty('transform');
                     region.style.removeProperty('fill');
                     console.log('DEBUG: Force-сброс стилей для:', regionName);
                 }
-            }, 100);
+            }, 50);
         });
     });
     
@@ -281,6 +283,7 @@ window.onclick = function(event) {
     const modal = document.getElementById('regionModal');
     if (event.target === modal) closeRegionModal();
 };
+
 
 
 
