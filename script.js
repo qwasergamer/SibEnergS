@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function loadRegionsFromJson() {
     console.log('=== DEBUG: loadRegionsFromJson вызвана! ===');
     // Alert для теста (убери после: закомментируй alert)
-    alert('DEBUG: script.js работает! Fetch regions.json...');
+    // alert('DEBUG: script.js работает! Fetch regions.json...');
     
     fetch('regions.json')
         .then(response => {
@@ -283,6 +283,7 @@ window.onclick = function(event) {
     const modal = document.getElementById('regionModal');
     if (event.target === modal) closeRegionModal();
 };
+
 
 
 
